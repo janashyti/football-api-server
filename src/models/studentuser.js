@@ -39,6 +39,8 @@ const userSchema = new Schema({
 userSchema.methods.toJASON = function() {
   const user = this
   const userObject = user.toObject()
+
+  return userObject
 }
 
 userSchema.pre('save', async function(next) {
