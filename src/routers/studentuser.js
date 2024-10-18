@@ -14,7 +14,7 @@ console.log("hi")
 // Add a new user
 router.post('/studentuser', async (req, res) => {
   //delete req.body.email_verified
-  //delete req.body.tokens
+  delete req.body.tokens
   const user = new User(req.body)
   console.log("hello")
 
@@ -22,7 +22,7 @@ router.post('/studentuser', async (req, res) => {
     await user.save()
     const token = await user.generateAuthToken()
     console.log("success")
-    sendVerificationEmail(user.email, user.username, token)
+    //sendVerificationEmail(user.email, user.username, token)
     res.status(201).send(user)
   }
   catch (error) {

@@ -1,4 +1,4 @@
-//const auth = require('../middleware/auth')
+const auth = require('../middleware/auth')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
@@ -36,6 +36,11 @@ const userSchema = new Schema({
     } 
 })
 
+userSchema.methods.toJASON = function() {
+  const user = this
+  const userObject = user.toObject()
+}
+
 userSchema.pre('save', async function(next) {
 
   
@@ -50,12 +55,15 @@ userSchema.pre('save', async function(next) {
 
 
 
-
 userSchema.methods.toJSON = function() {
   const user = this
   
   const userObject = user.toObject()
   
+  delete userObject.password
+  delete userObject.tokens
+  delete userObject.email_verified
+  delete userObject.__v
   
   
   return userObject
@@ -76,5 +84,3 @@ userSchema.methods.generateAuthToken = async function () {
 const User = mongoose.model('User', userSchema);
 
 module.exports = User
-console.log("test1")
-console.log(User)
