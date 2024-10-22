@@ -33,7 +33,8 @@ const userSchema = new Schema({
     school: {
         type: String,
         required: true
-    } 
+    },
+    tokens: [String] 
 })
 
 userSchema.methods.toJSON = function() {
@@ -62,10 +63,10 @@ userSchema.methods.toJSON = function() {
   
   const userObject = user.toObject()
   
-  delete userObject.password
-  delete userObject.tokens
-  delete userObject.email_verified
-  delete userObject.__v
+  //delete userObject.password
+  //delete userObject.tokens
+  //delete userObject.email_verified
+  //delete userObject.__v
   
   
   return userObject
