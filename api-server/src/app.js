@@ -24,4 +24,3 @@ app.listen(port, () => {
     console.log('Server is up on port ' + port) 
 })
 
-//this is a little test
