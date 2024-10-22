@@ -5,6 +5,7 @@ require('./database/mongoose')
 
 const cors = require('cors'); 
 const userRouter = require('./routers/studentuser')
+const coachRouter = require('./routers/coachuser')
 
 const app = express() 
 
@@ -17,6 +18,7 @@ app.use(function (req, res, next) {
   
 app.use(express.json()) 
 app.use(userRouter)
+app.use(coachRouter)
 
 
 const port = process.env.PORT || 3010 
