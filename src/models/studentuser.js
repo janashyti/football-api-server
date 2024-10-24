@@ -19,7 +19,7 @@ const userSchema = new Schema({
       }
     }
   },
-    username: { 
+    name: { 
         type: String,
         required: true, 
         trim: true
@@ -32,6 +32,10 @@ const userSchema = new Schema({
       },
     school: {
         type: String,
+        required: true
+    },
+    gradYear: {
+        type: Number,
         required: true
     },
     tokens: [String] 
