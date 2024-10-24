@@ -20,8 +20,6 @@ router.post('/coachuser', async (req, res) => {
   try {
     await user.save()
     const token = await user.generateAuthToken()
-    console.log(token)
-    console.log("success")
     sendVerificationEmail(user.email, user.name, token)
     res.status(201).send(user)
   }

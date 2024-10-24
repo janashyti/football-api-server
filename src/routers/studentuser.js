@@ -20,8 +20,6 @@ router.post('/studentuser', async (req, res) => {
   try {
     await user.save()
     const token = await user.generateAuthToken()
-    console.log(token)
-    console.log("success")
     sendVerificationEmail(user.email, user.name, token)
     res.status(201).send(user)
   }
@@ -30,6 +28,20 @@ router.post('/studentuser', async (req, res) => {
     const token = await user.generateAuthToken()
     console.log(token)
   }
+})
+
+
+router.get('/studentuser/verification', auth, async (req, res) => {
+  const user = req.user
+  const token = req.token
+
+  console.log(user)
+  console.log(token)
+
+  user.email_verified = true
+  user.save()
+
+  res.send()
 })
 
 module.exports = router
