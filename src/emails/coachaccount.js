@@ -168,7 +168,7 @@ const sendOneButtonEmail = ({ to, from, subject, imgURL, firstLine, secondLine, 
     try {
         sgMail.send(mssg)
         console.log("Sendgrid request sent")
-        console.log(mssg)
+        //console.log(mssg)
     }
     catch (error) {
         console.error(error);

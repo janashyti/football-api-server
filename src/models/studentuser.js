@@ -30,6 +30,10 @@ const userSchema = new Schema({
         trim: true,
         minLength: 8
       },
+      email_verified: {
+        type: Boolean,
+        default: false
+    },
     school: {
         type: String,
         required: true
@@ -41,12 +45,6 @@ const userSchema = new Schema({
     tokens: [String] 
 })
 
-userSchema.methods.toJSON = function() {
-  const user = this
-  const userObject = user.toObject()
-
-  return userObject
-}
 
 userSchema.pre('save', async function(next) {
 
@@ -61,6 +59,19 @@ userSchema.pre('save', async function(next) {
 })
 
 
+userSchema.statics.findByCredentials = async (email, password) => {
+  const user = await User.findOne({ email });
+   if (!user) {
+       throw new Error("Unable to login");
+   }
+   const isMatch = await bcrypt.compare(password, user.password);
+   if (!isMatch) {
+       throw new Error("Unable to login - no match");
+   }
+   return user;
+};
+
+
 
 userSchema.methods.toJSON = function() {
   const user = this
@@ -69,8 +80,8 @@ userSchema.methods.toJSON = function() {
   
   delete userObject.password
   delete userObject.tokens
-  //delete userObject.email_verified
-  //delete userObject.__v
+  delete userObject.email_verified
+  delete userObject.__v
   
   
   return userObject

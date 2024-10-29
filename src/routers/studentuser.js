@@ -1,5 +1,5 @@
 const auth = require('../middleware/auth')
-const { sendVerificationEmail } = require('../emails/coachaccount.js')
+const { sendVerificationEmail } = require('../emails/studentaccount.js')
 const express = require('express')
 const User = require('../models/studentuser')
 const mongoose = require("mongoose")
@@ -15,7 +15,6 @@ router.post('/studentuser', async (req, res) => {
   delete req.body.email_verified
   delete req.body.tokens
   const user = new User(req.body)
-  console.log("hello")
 
   try {
     await user.save()
@@ -43,5 +42,26 @@ router.get('/studentuser/verification', auth, async (req, res) => {
   res.send()
 })
 
+router.post('/studentuser/login', async (req, res) => {
+  try {
+    console.log(req.body.email)
+    console.log(req.body.password)
+
+    const user = await User.findByCredentials(req.body.email, req.body.password)
+    console.log(user)
+
+    if (user.email_verified === true) {
+      const token = await user.generateAuthToken()
+      res.status(200).send({ user, token })
+    }
+    else {
+      res.status(401).send("Email has not been verified.")
+    }
+  }
+  catch (e) {
+    console.log(e)
+    res.status(500).send()
+  }
+})
+
 module.exports = router
-console.log(User)

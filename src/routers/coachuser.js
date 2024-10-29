@@ -8,14 +8,13 @@ const { get } = require("request-promise");
 
 const router = new express.Router()
 
-console.log("hi")
+
 
 // Add a new user
 router.post('/coachuser', async (req, res) => {
   delete req.body.email_verified
   delete req.body.tokens
   const user = new Coach(req.body)
-  console.log("hello")
 
   try {
     await user.save()
@@ -41,5 +40,27 @@ router.get('/coachuser/verification', auth, async (req, res) => {
   res.send()
 })
 
+
+router.post('/coachuser/login', async (req, res) => {
+  try {
+    console.log(req.body.email)
+    console.log(req.body.password)
+
+    const user = await Coach.findByCredentials(req.body.email, req.body.password)
+    console.log(user)
+
+    if (user.email_verified === true) {
+      const token = await user.generateAuthToken()
+      res.status(200).send({ user, token })
+    }
+    else {
+      res.status(401).send("Email has not been verified.")
+    }
+  }
+  catch (e) {
+    console.log(e)
+    res.status(500).send()
+  }
+})
+
 module.exports = router
-console.log(Coach)
