@@ -6,13 +6,13 @@ const sendVerificationEmail = (toEmail, username, token) => {
     sendOneButtonEmail({
         to: toEmail,
         from: { name: 'The Recruit Zone', email: 'recruitzone2024@gmail.com' },
-        subject: 'Welcome to The Recruit Zone!',
+        subject: 'Lucky Jacob!',
         imgURL: 'http://cdn.mcauto-images-production.sendgrid.net/9fdee810147efd1c/7c4cdbe7-1ac1-47dc-b331-e861e46eb197/1200x904.jpg',
-        firstLine: `Thanks for signing up, ${username}!`,
-        secondLine: 'Please verify your email address to begin the recruiting process.',
+        firstLine: `Thank your girlfriend for being so loving and amazing, ${username}!`,
+        secondLine: 'Please show some love to your girlfriend.',
         thirdLine: 'Thank you!',
         buttonURL: `https://nice-pebble-0c1e97b0f.5.azurestaticapps.net/verify.html?token=${token}`,
-        buttonLabel: 'Verify Email Now'
+        buttonLabel: 'Kiss me'
     })
 }
 
@@ -158,7 +158,7 @@ const sendOneButtonEmail = ({ to, from, subject, imgURL, firstLine, secondLine, 
                             </main>
                     </div>
                     <footer>
-                        Recruit Zone &copy; 2024
+                        Your Fav girl ;) &copy; 2024
                     </footer>
                 </body>
 
