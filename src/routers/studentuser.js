@@ -26,7 +26,6 @@ router.post('/studentuser', async (req, res) => {
   catch (error) {
     res.status(400).send(error)
     
-    console.log(token)
   }
 })
 
