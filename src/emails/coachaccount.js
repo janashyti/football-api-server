@@ -11,7 +11,7 @@ const sendVerificationEmail = (toEmail, username, token) => {
         firstLine: `Thank your for signing up, ${username}!`,
         secondLine: 'Please verify your email address to begin the recruiting process.',
         thirdLine: 'Thank you!',
-        buttonURL: `https://nice-pebble-0c1e97b0f.5.azurestaticapps.net/verify.html?token=${token}`,
+        buttonURL: `https://nice-pebble-0c1e97b0f.5.azurestaticapps.net/coachverify.html?token=${token}`,
         buttonLabel: 'Verify Email'
     })
 }

@@ -1,5 +1,5 @@
 const auth = require('../middleware/auth')
-const { sendVerificationEmail } = require('../emails/account.js')
+const { sendVerificationEmail } = require('../emails/coachaccount.js')
 const express = require('express')
 const Coach = require('../models/coachuser')
 const mongoose = require("mongoose")
