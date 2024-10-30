@@ -38,6 +38,10 @@ const coachSchema = new Schema({
     type: String,
     required: true
   },
+  title: {
+    type: String,
+    required: true
+  },
   tokens: [String]
 })
 
