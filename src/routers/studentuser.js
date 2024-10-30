@@ -80,4 +80,77 @@ router.patch('/studentuser/logout', auth, async (req, res) => {
   }
 })
 
+
+router.patch('/studentuser/editprofile', auth, async (req, res) => {
+  const user = req.user
+  const mods = req.body
+  let studentuser = undefined
+  if (!mongoose.isValidObjectId(user._id)) {
+      res.status(400).send("Invalid object id")
+      return
+  }
+  try {
+      studentuser = await User.findById(user._id)
+      if (!studentuser) {
+          res.status(400).send('Invalid user id')
+          return
+      }
+  }
+  catch (e) {
+      console.log(e)
+      res.status(500).send('Error finding user')
+      return
+  }
+  
+ 
+  const props = Object.keys(mods)
+  const modifiable = [
+      "email",
+      "name",
+      "school",
+      "gradYear",
+      "gpa",
+      "position",
+      "height",
+      "weight",
+      "forty_time",
+      "pass_yards",
+      "comp_percentage",
+      "pass_tds ",
+      "pass_ints",
+      "rec",
+      "rec_yards", 
+      "red_tds", 
+      "rush_yards",
+      "rush_tds",
+      "yards_per_att", 
+      "tackles", 
+      "sacks", 
+      "ints", 
+      "tfls", 
+      "fg_made",
+      "fg_missed", 
+      "punt_avg"
+  ]
+  // check that all the props are modifable
+  const isValid = props.every((prop) => modifiable.includes(prop))
+  if (!isValid) {
+      res.status(400).send("One or more invalid properties")
+      return
+  }
+  try {
+
+      // set new values
+      props.forEach((prop) => studentuser[prop] = mods[prop])
+      await studentuser.save()
+      res.send(studentuser)
+  }
+  catch (e) {
+      console.log(e)
+      res.status(500).send("Error saving user")
+  }
+})
+
+
+
 module.exports = router

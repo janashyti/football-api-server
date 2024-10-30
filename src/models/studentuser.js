@@ -42,6 +42,77 @@ const userSchema = new Schema({
         type: Number,
         required: true
     },
+    gpa : {
+      type: Number,
+      required: false
+    },
+    position : {
+      type: String,
+      required: false
+    },
+    height : {
+      type: String,
+      required: false
+    },
+    weight : {
+      type: Number,
+      required: false
+    },
+    forty_time : {
+      type: Number,
+      required: false
+    },
+    pass_yards :{
+      type: Number
+    },
+    comp_percentage :{
+      type: Number
+    },
+    pass_tds :{
+      type: Number
+    },
+    pass_ints :{
+
+    },
+    rec :{
+      type:Number
+    },
+    rec_yards :{
+      type: Number
+    },
+    red_tds :{
+      type: Number
+    },
+    rush_yards :{
+      type: Number
+    },
+    rush_tds :{
+      type: Number
+    },
+    yards_per_att :{
+      type: Number
+    },
+    tackles :{
+      type: Number
+    },
+    sacks :{
+      type: Number
+    },
+    ints :{
+      type: Number
+    },
+    tfls :{
+      type: Number
+    },
+    fg_made :{
+      type: Number
+    },
+    fg_missed :{
+      type: Number
+    },
+    punt_avg :{
+      type: Number
+    },
     tokens: [String] 
 })
 

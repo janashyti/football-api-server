@@ -42,6 +42,10 @@ const coachSchema = new Schema({
     type: String,
     required: true
   },
+  coaching_position: {
+    type: String,
+    required: false
+  },
   tokens: [String]
 })
 

@@ -79,4 +79,58 @@ router.patch('/coachuser/logout', auth, async (req, res) => {
   }
 })
 
+
+
+router.patch('/coachuser/editprofile', auth, async (req, res) => {
+  const user = req.user
+  //const coachuserID = req.params.id
+  const mods = req.body
+  let coachuser = undefined
+  if (!mongoose.isValidObjectId(user._id)) {
+      res.status(400).send("Invalid object id")
+      return
+  }
+  try {
+      coachuser = await Coach.findById(user._id)
+      if (!coachuser) {
+          res.status(400).send('Invalid user id')
+          return
+      }
+  }
+  catch (e) {
+      console.log(e)
+      res.status(500).send('Error finding user')
+      return
+  }
+  
+ 
+  const props = Object.keys(mods)
+  const modifiable = [
+      "email",
+      "name",
+      "school",
+      "title",
+      "coaching_position"  
+  ]
+  // check that all the props are modifable
+  const isValid = props.every((prop) => modifiable.includes(prop))
+  if (!isValid) {
+      res.status(400).send("One or more invalid properties")
+      return
+  }
+  try {
+
+      // set new values
+      props.forEach((prop) => coachuser[prop] = mods[prop])
+      await coachuser.save()
+      res.send(coachuser)
+  }
+  catch (e) {
+      console.log(e)
+      res.status(500).send("Error saving user")
+  }
+})
+
+
+
 module.exports = router
