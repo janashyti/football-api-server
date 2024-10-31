@@ -132,5 +132,60 @@ router.patch('/coachuser/editprofile', auth, async (req, res) => {
 })
 
 
+router.get('/coachuser/data', auth, async (req, res) => {
+  const user = req.user
+  let filter = {
+      $and: []
+  }
+  const projection = {
+      email: 1,
+      name: 1,
+      school: 1,
+      title: 1,
+      coaching_position: 1,
+      _id: 0
+  }
+  const options = {}
+  filter.$and.push({
+      $or: [
+          { _id: user._id }
+      ]
+  })
+
+ 
+  if (req.query.hasOwnProperty('search')) {
+      filter.$and.push({
+          $text: {
+              $search: req.query.search
+          }
+      })
+  }
+
+  console.log(JSON.stringify(filter))
+
+  if (req.query.sortBy) {
+      const parts = req.query.sortBy.split(':')
+      options.sort = {}
+      options.sort[parts[0]] = (parts[1] == 'asc') ? 1 : -1
+  }
+
+  if (req.query.limit) {
+      options.limit = req.query.limit
+  }
+
+  if (req.query.skip) {
+      options.skip = req.query.skip
+  }
+
+  try {
+      const results = await Coach.find(filter, projection, options)
+      res.send(results)
+  } catch (e) {
+      console.log(e)
+      res.status(500).send()
+  }
+})
+
+
 
 module.exports = router

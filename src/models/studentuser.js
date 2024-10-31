@@ -72,7 +72,7 @@ const userSchema = new Schema({
       type: Number
     },
     pass_ints :{
-
+      type: Number
     },
     rec :{
       type:Number

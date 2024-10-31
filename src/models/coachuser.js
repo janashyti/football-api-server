@@ -97,6 +97,7 @@ coachSchema.methods.generateAuthToken = async function () {
   return token
 }
 
+coachSchema.index({ name: 'text', coaching_position: 'text'})
 
 const Coach = mongoose.model('Coach', coachSchema);
 

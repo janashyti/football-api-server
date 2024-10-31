@@ -116,7 +116,7 @@ router.patch('/studentuser/editprofile', auth, async (req, res) => {
       "forty_time",
       "pass_yards",
       "comp_percentage",
-      "pass_tds ",
+      "pass_tds",
       "pass_ints",
       "rec",
       "rec_yards", 
@@ -150,6 +150,88 @@ router.patch('/studentuser/editprofile', auth, async (req, res) => {
       res.status(500).send("Error saving user")
   }
 })
+
+
+
+router.get('/studentuser/data', auth, async (req, res) => {
+  const user = req.user
+  let filter = {
+      $and: []
+  }
+  const projection = {
+
+      email: 1,
+      name: 1,
+      school: 1,
+      gradYear: 1,
+      gpa: 1,
+      position: 1,
+      height: 1,
+      weight: 1,
+      forty_time: 1,
+      pass_yards: 1,
+      comp_percentage: 1,
+      pass_tds: 1,
+      pass_ints: 1,
+      rec: 1,
+      rec_yards: 1, 
+      red_tds: 1, 
+      rush_yards: 1,
+      rush_tds: 1,
+      yards_per_att: 1, 
+      tackles: 1, 
+      sacks: 1, 
+      ints: 1, 
+      tfls: 1, 
+      fg_made: 1,
+      fg_missed: 1, 
+      punt_avg: 1
+
+  }
+  const options = {}
+  filter.$and.push({
+      $or: [
+          { _id: user._id }
+      ]
+  })
+
+ 
+  if (req.query.hasOwnProperty('search')) {
+      filter.$and.push({
+          $text: {
+              $search: req.query.search
+          }
+      })
+  }
+
+  console.log(JSON.stringify(filter))
+
+  if (req.query.sortBy) {
+      const parts = req.query.sortBy.split(':')
+      options.sort = {}
+      options.sort[parts[0]] = (parts[1] == 'asc') ? 1 : -1
+  }
+
+  if (req.query.limit) {
+      options.limit = req.query.limit
+  }
+
+  if (req.query.skip) {
+      options.skip = req.query.skip
+  }
+
+  try {
+      const results = await User.find(filter, projection, options)
+      res.send(results)
+  } catch (e) {
+      console.log(e)
+      res.status(500).send()
+  }
+})
+
+
+
+module.exports = router
 
 
 
