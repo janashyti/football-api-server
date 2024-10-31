@@ -23,7 +23,7 @@ router.post('/coachuser', async (req, res) => {
     res.status(201).send(user)
   }
   catch (error) {
-    res.status(400).send(error)
+    res.status(400).send("Email already in use. Please try logging in or use a different email to create an account.")
   }
 })
 
