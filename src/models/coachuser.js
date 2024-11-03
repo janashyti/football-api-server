@@ -1,4 +1,3 @@
-const auth = require('../middleware/cauth')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
@@ -97,7 +96,7 @@ coachSchema.methods.generateAuthToken = async function () {
   return token
 }
 
-coachSchema.index({ name: 'text', coaching_position: 'text'})
+coachSchema.index({ school: 'text', coaching_position: 'text'})
 
 const Coach = mongoose.model('Coach', coachSchema);
 

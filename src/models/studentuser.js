@@ -1,4 +1,4 @@
-const auth = require('../middleware/auth')
+//const auth = require('../middleware/auth')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
@@ -142,7 +142,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
    return user;
 };
 
-
+userSchema.index({ school: 'text', position: 'text', gradYear: 1})
 
 userSchema.methods.toJSON = function() {
   const user = this
