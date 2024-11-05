@@ -1,4 +1,3 @@
-//const auth = require('../middleware/auth')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
@@ -113,7 +112,16 @@ const userSchema = new Schema({
     punt_avg :{
       type: Number
     },
-    tokens: [String] 
+    tokens: [String],
+    video: {
+      type: String,
+      required: false,  
+      validate(value) {
+        if (value && !validator.isURL(value)) {
+          throw new Error('Video URL is invalid.');
+        }
+      }
+    }
 })
 
 

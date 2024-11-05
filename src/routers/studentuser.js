@@ -4,7 +4,9 @@ const express = require('express')
 const User = require('../models/studentuser')
 const Coach = require('../models/coachuser')
 const mongoose = require("mongoose")
-const { get } = require("request-promise");
+const { get } = require("request-promise")
+const cloudinary = require('cloudinary').v2
+const multer = require('multer')
 
 
 const router = new express.Router()
@@ -131,7 +133,8 @@ router.patch('/studentuser/editprofile', auth, async (req, res) => {
     "tfls",
     "fg_made",
     "fg_missed",
-    "punt_avg"
+    "punt_avg",
+    "video"
   ]
   // check that all the props are modifable
   const isValid = props.every((prop) => modifiable.includes(prop))
@@ -186,9 +189,10 @@ router.get('/studentuser/data', auth, async (req, res) => {
     tfls: 1,
     fg_made: 1,
     fg_missed: 1,
-    punt_avg: 1
-
+    punt_avg: 1,
+    video: 1
   }
+
   const options = {}
   filter.$and.push({
     $or: [
@@ -307,7 +311,8 @@ router.get('/studentusers', auth, async (req, res) => {
     tfls: 1,
     fg_made: 1,
     fg_missed: 1,
-    punt_avg: 1
+    punt_avg: 1,
+    video: 1
 
   }
   const options = {}
@@ -344,4 +349,81 @@ router.get('/studentusers', auth, async (req, res) => {
 
 
 
-module.exports = router
+
+
+
+
+
+
+// Multer Memory Storage - Store file in memory (ideal for Cloudinary)
+const storage = multer.memoryStorage();
+
+// File filter function to accept only video MIME types
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = [
+    'video/mp4',
+    'video/avi',
+    'video/mov',
+    'video/x-m4v',      // Add for .m4v videos
+    'video/quicktime',   // Add for .mov videos
+    'video/webm'         // Add for webm videos
+  ];
+
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);  // Accept the file
+  } else {
+    cb(new Error('Please upload a valid video file'), false); // Reject the file
+  }
+};
+
+// Multer configuration
+const upload = multer({
+  storage,  // Use memory storage
+  limits: {
+    fileSize: 10000000 // 10MB file size limit
+  },
+  fileFilter  // Use the file filter function
+});
+
+// Route to upload a video
+router.post('/studentuser/uploadvideo', auth, upload.single('video'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send({ error: 'No video file uploaded' });
+    }
+
+    // Upload the video to Cloudinary using the buffer from Multer's memory storage
+    const result = await cloudinary.uploader.upload_stream(
+      { 
+        resource_type: "video", // Cloudinary expects the resource type to be "video"
+        folder: 'student_videos' // Cloudinary folder where video will be saved
+      },
+      async (error, cloudinaryResult) => {
+        if (error) {
+          return res.status(400).send({ error: error.message });
+        }
+
+        // Get the video URL from Cloudinary response
+        const videoUrl = cloudinaryResult.secure_url;
+
+        // Save the video URL to the user's profile
+        const user = req.user;  // Get the logged-in user from the auth middleware
+        user.video = videoUrl;
+        await user.save();
+
+        // Respond with success and the video URL
+        res.status(200).send({ message: "Video uploaded successfully!", videoUrl });
+      }
+    );
+
+    // Now upload the video to Cloudinary using the buffer
+    // Using the buffer stored by Multer in `req.file.buffer`
+    result.end(req.file.buffer);
+
+  } catch (error) {
+    console.error(error);  // Log error for debugging
+    res.status(400).send({ error: error.message });
+  }
+});
+
+module.exports = router;
