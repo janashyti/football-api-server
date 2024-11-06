@@ -134,7 +134,8 @@ router.patch('/studentuser/editprofile', auth, async (req, res) => {
     "fg_made",
     "fg_missed",
     "punt_avg",
-    "video"
+    "video",
+    "image"
   ]
   // check that all the props are modifable
   const isValid = props.every((prop) => modifiable.includes(prop))
@@ -190,7 +191,8 @@ router.get('/studentuser/data', auth, async (req, res) => {
     fg_made: 1,
     fg_missed: 1,
     punt_avg: 1,
-    video: 1
+    video: 1,
+    image: 1
   }
 
   const options = {}
@@ -249,7 +251,8 @@ router.get('/studentuser/coachusers', auth, async (req, res) => {
     school: 1,
     title: 1,
     coaching_position: 1,
-    _id: 0
+    _id: 0,
+    image: 1
   }
   const options = {}
 
@@ -312,8 +315,8 @@ router.get('/studentusers', auth, async (req, res) => {
     fg_made: 1,
     fg_missed: 1,
     punt_avg: 1,
-    video: 1
-
+    video: 1,
+    image: 1
   }
   const options = {}
 
@@ -348,82 +351,124 @@ router.get('/studentusers', auth, async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-// Multer Memory Storage - Store file in memory (ideal for Cloudinary)
 const storage = multer.memoryStorage();
 
-// File filter function to accept only video MIME types
 const fileFilter = (req, file, cb) => {
   const allowedTypes = [
     'video/mp4',
     'video/avi',
     'video/mov',
-    'video/x-m4v',      // Add for .m4v videos
-    'video/quicktime',   // Add for .mov videos
-    'video/webm'         // Add for webm videos
+    'video/x-m4v',      
+    'video/quicktime',   
+    'video/webm'         
   ];
 
   if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);  // Accept the file
+    cb(null, true);  
   } else {
-    cb(new Error('Please upload a valid video file'), false); // Reject the file
+    cb(new Error('Please upload a valid video file'), false); 
   }
 };
 
-// Multer configuration
+
 const upload = multer({
-  storage,  // Use memory storage
+  storage,  
   limits: {
-    fileSize: 10000000 // 10MB file size limit
+    fileSize: 1000000 
   },
-  fileFilter  // Use the file filter function
+  fileFilter  
 });
 
-// Route to upload a video
+
 router.post('/studentuser/uploadvideo', auth, upload.single('video'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).send({ error: 'No video file uploaded' });
     }
 
-    // Upload the video to Cloudinary using the buffer from Multer's memory storage
+    
     const result = await cloudinary.uploader.upload_stream(
       { 
-        resource_type: "video", // Cloudinary expects the resource type to be "video"
-        folder: 'student_videos' // Cloudinary folder where video will be saved
+        resource_type: "video", 
+        folder: 'student_videos' 
       },
       async (error, cloudinaryResult) => {
         if (error) {
           return res.status(400).send({ error: error.message });
         }
 
-        // Get the video URL from Cloudinary response
         const videoUrl = cloudinaryResult.secure_url;
 
-        // Save the video URL to the user's profile
-        const user = req.user;  // Get the logged-in user from the auth middleware
+        const user = req.user;  
         user.video = videoUrl;
         await user.save();
 
-        // Respond with success and the video URL
         res.status(200).send({ message: "Video uploaded successfully!", videoUrl });
       }
     );
 
-    // Now upload the video to Cloudinary using the buffer
-    // Using the buffer stored by Multer in `req.file.buffer`
     result.end(req.file.buffer);
 
   } catch (error) {
-    console.error(error);  // Log error for debugging
+    console.error(error);  
+    res.status(400).send({ error: error.message });
+  }
+})
+
+
+
+
+const imageFilter = (req, file, cb) => {
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/jpg',
+    'image/gif'
+  ];
+
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Please upload a valid image file (jpg, jpeg, png, gif)'), false);
+  }
+};
+
+const uploadimg = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, 
+  fileFilter: imageFilter,
+});
+
+router.post('/studentuser/uploadimage', auth, uploadimg.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send({ error: 'No image file uploaded' });
+    }
+
+    const result = await cloudinary.uploader.upload_stream(
+      { folder: 'student_images', resource_type: 'image' },
+      async (error, cloudinaryResult) => {
+        if (error) {
+          return res.status(400).send({ error: error.message });
+        }
+
+        const imageUrl = cloudinaryResult.secure_url;
+
+        const user = req.user;
+        user.image = imageUrl;
+        await user.save();
+
+        res.status(200).send({ message: 'Image uploaded successfully!', imageUrl });
+      }
+    );
+
+    result.end(req.file.buffer);
+  } catch (error) {
+    console.error(error);
     res.status(400).send({ error: error.message });
   }
 });
+
+
 
 module.exports = router;

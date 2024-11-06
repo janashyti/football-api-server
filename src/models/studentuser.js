@@ -118,7 +118,15 @@ const userSchema = new Schema({
       required: false,  
       validate(value) {
         if (value && !validator.isURL(value)) {
-          throw new Error('Video URL is invalid.');
+          throw new Error('Video URL is invalid.')
+        }
+      }
+    },
+    image: {
+      type: String,
+      validate(value) {
+        if (value && !validator.isURL(value)) {
+          throw new Error('Image URL is invalid.')
         }
       }
     }

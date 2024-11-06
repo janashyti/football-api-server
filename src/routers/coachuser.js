@@ -111,7 +111,9 @@ router.patch('/coachuser/editprofile', auth, async (req, res) => {
     "name",
     "school",
     "title",
-    "coaching_position"
+    "coaching_position",
+    "video",
+    "image"
   ]
   // check that all the props are modifable
   const isValid = props.every((prop) => modifiable.includes(prop))
@@ -144,7 +146,8 @@ router.get('/coachuser/data', auth, async (req, res) => {
     school: 1,
     title: 1,
     coaching_position: 1,
-    _id: 0
+    _id: 0,
+    image: 1
   }
   const options = {}
   filter.$and.push({
@@ -202,7 +205,8 @@ router.get('/coachusers', auth, async (req, res) => {
     school: 1,
     title: 1,
     coaching_position: 1,
-    _id: 0
+    _id: 0,
+    image: 1
   }
   const options = {}
 
@@ -264,7 +268,8 @@ router.get('/coachuser/studentusers', auth, async (req, res) => {
     fg_missed: 1,
     punt_avg: 1,
     _id: 0,
-    video: 1
+    video: 1,
+    image: 1
   }
   const options = {}
 
@@ -296,6 +301,64 @@ router.get('/coachuser/studentusers', auth, async (req, res) => {
   }
 })
 
+
+
+const cloudinary = require('cloudinary').v2
+const multer = require('multer')
+
+const storage = multer.memoryStorage();
+
+const imageFilter = (req, file, cb) => {
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/jpg',
+    'image/gif'
+  ];
+
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Please upload a valid image file (jpg, jpeg, png, gif)'), false);
+  }
+};
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, 
+  fileFilter: imageFilter,
+});
+
+
+router.post('/coachuser/uploadimage', auth, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send({ error: 'No image file uploaded' });
+    }
+
+    const result = await cloudinary.uploader.upload_stream(
+      { folder: 'student_images', resource_type: 'image' },
+      async (error, cloudinaryResult) => {
+        if (error) {
+          return res.status(400).send({ error: error.message });
+        }
+
+        const imageUrl = cloudinaryResult.secure_url;
+
+        const user = req.user;
+        user.image = imageUrl;
+        await user.save();
+
+        res.status(200).send({ message: 'Image uploaded successfully!', imageUrl });
+      }
+    );
+
+    result.end(req.file.buffer);
+  } catch (error) {
+    console.error(error);
+    res.status(400).send({ error: error.message });
+  }
+});
 
 
 

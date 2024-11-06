@@ -48,6 +48,14 @@ const coachSchema = new Schema({
   announcements: [
     {type: Schema.Types.ObjectId, ref: 'Announcement'}
 ],
+image: {
+  type: String,
+  validate(value) {
+    if (value && !validator.isURL(value)) {
+      throw new Error('Image URL is invalid.')
+    }
+  }
+},
   tokens: [String]
 })
 
