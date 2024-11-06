@@ -45,6 +45,9 @@ const coachSchema = new Schema({
     type: String,
     required: false
   },
+  announcements: [
+    {type: Schema.Types.ObjectId, ref: 'Announcement'}
+],
   tokens: [String]
 })
 
