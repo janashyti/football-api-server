@@ -267,7 +267,7 @@ router.get('/coachuser/studentusers', auth, async (req, res) => {
     fg_made: 1,
     fg_missed: 1,
     punt_avg: 1,
-    _id: 0,
+    _id: 1,
     video: 1,
     image: 1
   }

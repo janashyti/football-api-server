@@ -48,6 +48,12 @@ const coachSchema = new Schema({
   announcements: [
     {type: Schema.Types.ObjectId, ref: 'Announcement'}
 ],
+invitations: [
+  {type: Schema.Types.ObjectId, ref: 'Invitation'}
+],
+invitationresponse: [
+  {type: Schema.Types.ObjectId, ref: 'Invitation'}
+],
 image: {
   type: String,
   validate(value) {

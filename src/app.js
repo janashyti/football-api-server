@@ -7,6 +7,7 @@ const cors = require('cors');
 const userRouter = require('./routers/studentuser')
 const coachRouter = require('./routers/coachuser')
 const announcementRouter = require('./routers/announcement')
+const invitationRouter = require('./routers/invitation')
 
 const app = express() 
 
@@ -21,6 +22,7 @@ app.use(express.json())
 app.use(userRouter)
 app.use(coachRouter)
 app.use(announcementRouter)
+app.use(invitationRouter)
 
 const cloudinary = require('cloudinary').v2;
 

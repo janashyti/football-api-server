@@ -113,6 +113,12 @@ const userSchema = new Schema({
       type: Number
     },
     tokens: [String],
+    invitations: [
+      {type: Schema.Types.ObjectId, ref: 'Invitation'}
+    ],
+    invitationresponse: [
+      {type: Schema.Types.ObjectId, ref: 'Invitation'}
+    ],
     video: {
       type: String,
       required: false,  

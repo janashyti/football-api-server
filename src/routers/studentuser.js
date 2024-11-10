@@ -471,4 +471,4 @@ router.post('/studentuser/uploadimage', auth, uploadimg.single('image'), async (
 
 
 
-module.exports = router;
+module.exports = router
