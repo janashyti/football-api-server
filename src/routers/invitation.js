@@ -161,6 +161,32 @@ router.get('/invitation/response/:id', auth, async (req, res) => {
 
 })  
 
+
+router.delete('/invitation/:id', sauth, async (req, res) => {
+  const user = req.user
+  const invitationId = req.params.id
+  let invitation = null
+  if (!mongoose.isValidObjectId(invitationId)) {
+      res.status(400).send("Invalid request")
+      return
+  }
+  try {
+      invitation = await Invitation.findById(invitationId)
+
+      if (!invitation) {
+          res.status(400).send("Invitation not found.")
+          return
+      }
+
+      await invitation.deleteOne()
+      res.send()
+  }
+  catch (e) {
+      console.log(e)
+      res.status(500).send()
+  }
+})
+
 module.exports = router
 
 
