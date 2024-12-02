@@ -165,25 +165,39 @@ router.get('/invitation/response/:id', auth, async (req, res) => {
 router.delete('/invitation/:id', sauth, async (req, res) => {
   const user = req.user
   const invitationId = req.params.id
-  let invitation = null
+
   if (!mongoose.isValidObjectId(invitationId)) {
-      res.status(400).send("Invalid request")
-      return
+    res.status(400).send("Invalid request")
+    return
   }
+
   try {
-      invitation = await Invitation.findById(invitationId)
+    // Find the user who has the invitation in their invitations array
+    const student = await Student.findById(user._id)
 
-      if (!invitation) {
-          res.status(400).send("Invitation not found.")
-          return
-      }
+    if (!student) {
+      res.status(404).send("User not found.")
+      return
+    }
 
-      await invitation.deleteOne()
-      res.send()
-  }
-  catch (e) {
-      console.log(e)
-      res.status(500).send()
+    // Check if the invitationId exists in the student's invitations array
+    const invitationIndex = student.invitations.indexOf(invitationId)
+
+    if (invitationIndex === -1) {
+      res.status(404).send("Invitation not found in user's invitations.")
+      return
+    }
+
+    // Remove the invitationId from the invitations array
+    student.invitations.splice(invitationIndex, 1)
+
+    // Save the updated user document
+    await student.save()
+
+    res.send("Invitation removed from user's invitations.")
+  } catch (e) {
+    console.log(e)
+    res.status(500).send("Server error.")
   }
 })
 
